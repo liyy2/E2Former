@@ -103,7 +103,7 @@ def test_e2former():
         'pbc_max_radius': 6.0,
         'pbc_expanded_num_cell_per_direction': 1,
         'expanded_token_cutoff': 512,
-        'max_neighbors': 20,
+        'max_neighbors': 32,
         
         # E2Former backbone configuration
         'irreps_node_embedding': '128x0e+128x1e+128x2e',

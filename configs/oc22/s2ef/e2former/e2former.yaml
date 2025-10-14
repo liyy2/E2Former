@@ -1,4 +1,4 @@
-trainer: equiformerv2_forces
+trainer: new_equiformerv2_forces
 print_every: 200
 
 dataset:
@@ -61,7 +61,7 @@ model:
   otf_graph: True
 
   backbone:
-    model: src.E2Former.E2FormerBackbone
+    model: src.models.E2Former_wrapper.E2FormerBackbone
     encoder: "default" # or dit
 
     # dit_config
@@ -82,13 +82,10 @@ model:
     # batch_size: 12
     # activation: gelu
 
-
-
-
   #  # molecular_graph_cfg:
-  #   use_pbc: true
-  #   use_pbc_single: false
-  #   otf_graph: true
+    use_pbc: true
+    use_pbc_single: false
+    otf_graph: true
   #   max_num_elements: 90
   #   max_num_nodes_per_batch: 150 # Average 73, Max 220, use 150 for padding
   #   enforce_max_neighbors_strictly: false
@@ -114,20 +111,16 @@ model:
   #   normalization: layernorm
 
     # psm_config:
-    pbc_expanded_token_cutoff: 256
+    pbc_expanded_token_cutoff: 512
     pbc_expanded_num_cell_per_direction: 4
-
-
-
 
   # backbone_config:
     decouple_EF: True
-    max_neighbors: 20
-    irreps_node_embedding: "128x0e+128x1e+128x2e"
+    max_neighbors: 32
+    irreps_node_embedding: "256x0e+256x1e+256x2e"
     num_layers: 8
-    # max_neighbors: 20
-    pbc_max_radius: 12.0
-    max_radius: 15.0
+    pbc_max_radius: 10
+    max_radius: 10
     basis_type: "gaussian"
     number_of_basis: 128
     num_attn_heads: 4
@@ -142,7 +135,7 @@ model:
     drop_path_rate: 0.0
     attn_type: "first-order"
     tp_type : 'QK_alpha'
-    edge_embedtype: "eqv2"
+    edge_embedtype: "highorder"
     attn_biastype: "share"
     ffn_type: 'default'
     add_rope: False
@@ -151,12 +144,12 @@ model:
 
   heads:
     forces:
-      module: src.E2Former.E2FormerDirectForceHead
+      module: src.models.E2Former_wrapper.E2FormerEasyForceHead
     energy:
-      module: src.E2Former.E2FormerEnergyHead
+      module: src.models.E2Former_wrapper.E2FormerEasyEnergyHead
 
 optim:
-  batch_size:               4
+  batch_size:               64
   eval_batch_size:          4
   load_balancing:           atoms
   num_workers:              8

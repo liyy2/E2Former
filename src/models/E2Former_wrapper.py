@@ -144,6 +144,7 @@ def process_batch_data(data, max_nodes=None):
         "pos": batched_pos,                    # [num_graphs, max_nodes, 3] - Positions
         "cell": data.cell,                     # [num_graphs, 3, 3] - Unit cells
         "token_id": batched_token_id,          # [num_graphs, max_nodes] - Atomic numbers
+        "atomic_numbers": batched_token_id,
         "masked_token_type": masked_token_type,# [num_graphs, max_nodes] - For MLM tasks
         "padding_mask": padding_mask,          # [num_graphs, max_nodes] - Padding indicators
         "pbc": pbc,                           # [num_graphs, 3] - PBC flags per dimension
@@ -294,7 +295,8 @@ class E2FormerBackbone(nn.Module):
         batched_data = process_batch_data(batched_data, None)
         # Generate embeddings
         atomic_numbers = batched_data["atomic_numbers"]
-        padding_mask = ~batched_data["atom_masks"]
+        # padding_mask = ~batched_data["atom_masks"]
+        padding_mask = batched_data["padding_mask"]
         pos = batched_data["pos"]
         batched_data["pos"] = torch.where(
             padding_mask.unsqueeze(dim=-1).repeat(1, 1, 3),
@@ -335,9 +337,9 @@ class E2FormerBackbone(nn.Module):
             else:
                 pbc_expand_batched = None
 
-            token_embedding = self.embedding(atomic_numbers) + \
-                self.embedding_charge(torch.clip(batched_data["charge"],-10,10)+10) + \
-                    self.embedding_multiplicity(torch.clip(batched_data["multiplicity"],0,20))
+            token_embedding = self.embedding(atomic_numbers) 
+                # self.embedding_charge(torch.clip(batched_data["charge"],-10,10)+10) + \
+                    # self.embedding_multiplicity(torch.clip(batched_data["multiplicity"],0,20))
 
             # =====================================================================
             # Step 4: Forward Pass Through E2Former Decoder
@@ -546,6 +548,7 @@ class E2FormerEasyEnergyHead(E2FormerHeadBase):
     def __init__(self, backbone: E2FormerBackbone):
         super().__init__(backbone)
         self.linear = nn.Linear(backbone.decoder.scalar_dim, 1, bias=False)
+        self.use_amp = False
 
         self.post_init(gain=0.01)
 
@@ -585,6 +588,7 @@ class E2FormerEasyForceHead(E2FormerHeadBase):
     def __init__(self, backbone: E2FormerBackbone):
         super().__init__(backbone)
         self.linear = nn.Linear(backbone.decoder.scalar_dim, 1, bias=False)
+        self.use_amp = False
 
         self.post_init()
 

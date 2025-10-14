@@ -564,6 +564,8 @@ class CellExpander:
                 expand_mask[need_threshold] &= new_expand_mask
                 expand_len = torch.sum(expand_mask, dim=-1)
                 max_expand_len = torch.max(expand_len)
+                print("expand_len",expand_len)
+                print("expand_mask",expand_mask)
 
             outcell_index = torch.zeros(
                 [batch_size, max_expand_len], dtype=torch.long, device=pos.device

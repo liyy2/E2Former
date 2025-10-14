@@ -8,7 +8,7 @@ import torch
 import numpy as np
 from torch import nn
 
-@torch.jit.script
+# @torch.jit.script
 def gaussian(x, mean, std):
     pi = torch.pi
     a = (2 * pi) ** 0.5
@@ -53,8 +53,6 @@ class RadialFunction(nn.Module):
 
 
 # From Graphormer
-
-
 class GaussianRadialBasisLayer(torch.nn.Module):
     def __init__(self, num_basis, cutoff):
         super().__init__()

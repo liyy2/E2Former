@@ -1,4 +1,4 @@
-trainer: equiformerv2_forces
+trainer: new_equiformerv2_forces
 
 dataset:
   train:

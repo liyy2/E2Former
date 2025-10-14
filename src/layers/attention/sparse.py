@@ -138,19 +138,27 @@ class E2AttentionArbOrder_sparse(BaseE2Attention):
             node_output: Updated node features
             attn_weight: Unchanged attention weights
         """
+        
         f_N1 = node_irreps_input.shape[0]
         topK = attn_weight.shape[1]
         f_sparse_idx_node = batched_data["f_sparse_idx_node"]
+
+        print("f_N1", f_N1)
+        print("topK",topK)
+        print("attn_weight",attn_weight)
+        print("f_sparse_idx_node",f_sparse_idx_node)
         
         # Mask attention weights
         attn_weight = attn_weight.masked_fill(attn_mask, 0)
         edge_feature = attn_weight.sum(dim=1)  # (f_N1, attn_weight_input_dim)
         
         # Compute edge features
+        
         x_edge, src_node, tgt_node = self.compute_edge_features(
             attn_weight, atomic_numbers, f_N1, topK, f_sparse_idx_node
         )
-        
+        print("x_edge", x_edge)
+
         # Compute alpha weights using alpha module
         alpha = self.alpha_module(
             x_edge=x_edge,

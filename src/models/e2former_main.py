@@ -434,7 +434,7 @@ class E2former(torch.nn.Module):
         # =====================================================================
         # Step 1: Data Preparation and Tensor Setup
         # =====================================================================
-        
+        print("Using e2former backbone to train the model")
         # Extract data type and device for consistent tensor operations
         tensortype = self.default_node_embedding.weight.dtype
         device = batched_data["pos"].device
@@ -445,7 +445,8 @@ class E2former(torch.nn.Module):
         # Extract atomic positions and create padding mask
         # padding_mask: True where atoms are padded (not real)
         node_pos = batched_data["pos"]
-        padding_mask = ~batched_data["atom_masks"]
+        # padding_mask = ~batched_data["atom_masks"]
+        padding_mask = batched_data["padding_mask"]
         
         # Set padded positions to a large value (999.0) to avoid interference
         # This ensures padded atoms don't contribute to neighbor calculations
