@@ -3,7 +3,8 @@
 This repository contains the official implementation of E2Former, an equivariant neural network interatomic potential based on efficient attention mechanisms and E(3)-equivariant operations.
 
 
-<center> <img width="800" height="600" alt="Screenshot 2025-09-22 at 10 36 58 PM" src="https://github.com/user-attachments/assets/83351704-40fa-4ccf-91cb-b96342dd2745" /> </center>
+[fig2-Apr14 (4).pdf](https://github.com/user-attachments/files/23005929/fig2-Apr14.4.pdf)
+
 
 
 At its core, E2Former utilizes **Wigner 6j convolution** for efficient and accurate tensor product operations, enabling the model to capture complex geometric interactions while preserving physical symmetries.
