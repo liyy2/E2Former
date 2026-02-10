@@ -2,8 +2,7 @@
 
 This repository contains the official implementation of E2Former, an equivariant neural network interatomic potential based on efficient attention mechanisms and E(3)-equivariant operations.
 
-
-<img width="769" height="541" alt="fig2-Apr14 (4)" src="https://github.com/user-attachments/assets/4b3e89c8-f9f5-4848-afe9-76f133d7ce62" />
+<img width="769" alt="E2Former architecture" src="assets/fig2.png" />
 
 
 
