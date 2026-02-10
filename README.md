@@ -32,14 +32,12 @@ conda install mamba -n base -c conda-forge
 
 ```bash
 mamba env create -f env.yml
-conda activate gotennet
 ```
 
 Or if you prefer using conda directly:
 
 ```bash
 conda env create -f env.yml
-conda activate gotennet
 ```
 
 ### Step 3: Install FairChem core package
