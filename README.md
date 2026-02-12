@@ -228,3 +228,4 @@ If you find E2Former useful in your research, please consider citing:
 ## Acknowledgments
 
 E2Former builds upon several excellent works in the field of neural network interatomic potentials and equivariant neural networks. We particularly acknowledge the FairChem framework for providing the foundation for this implementation.
+We also acknowledge ESCAIP for related ideas and contributions to equivariant molecular modeling.
