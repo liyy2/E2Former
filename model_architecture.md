@@ -24,9 +24,9 @@ E2Former is an E(3)-equivariant transformer for molecular energy/force modeling 
 
 In conventional equivariant message passing, dominant tensor-product work is often edge-indexed:
 
-\[
+$$
 m_i = \sum_{j \in \mathcal{N}(i)} \mathrm{TP}(h_j, Y(\mathbf{r}_{ij}))
-\]
+$$
 
 E2Former uses Wigner-6j recoupling to reorganize contraction order and reuse intermediate structure, shifting dominant work toward node-centric operations where possible. Practically, this is the key reason E2Former can scale better while remaining equivariant.
 
