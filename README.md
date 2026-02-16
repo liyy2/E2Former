@@ -15,7 +15,7 @@
 
 E2Former is an E(3)-equivariant molecular foundation model for energy and force prediction. It combines efficient Wigner-6j-based tensor products with equivariant attention to improve scalability while preserving geometric symmetries.
 
-This repository is adapted from EScAIP and FairChem.
+
 
 The repository includes:
 
@@ -235,3 +235,6 @@ OpenReview page: <https://openreview.net/forum?id=ls5L4IMEwt>
 ## License
 
 This project is released under the [MIT License](LICENSE).
+
+## Acknowledgments
+This repository is adapted from EScAIP and FairChem.
