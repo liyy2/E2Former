@@ -1,217 +1,213 @@
-# E2Former: An Efficient and Equivariant Transformer with Linear-Scaling Tensor Products
+# E2Former
 
-This repository contains the official implementation of E2Former, an equivariant neural network interatomic potential based on efficient attention mechanisms and E(3)-equivariant operations.
+Official implementation of **E2Former**, an efficient and scalable E(3)-equivariant transformer for molecular energy and force prediction.
 
-<img width="769" alt="E2Former architecture" src="assets/fig2.png" />
+[Paper (arXiv:2501.19216)](https://arxiv.org/abs/2501.19216) | [License: MIT](./LICENSE)
 
+![E2Former architecture](assets/fig2.png)
 
+## Table of Contents
 
+- [Overview](#overview)
+- [Highlights](#highlights)
+- [Repository Layout](#repository-layout)
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Data Setup](#data-setup)
+- [Training](#training)
+- [Validation](#validation)
+- [Molecular Dynamics Rollout](#molecular-dynamics-rollout)
+- [Command Reference](#command-reference)
+- [Configuration Guide](#configuration-guide)
+- [Reproducibility Tips](#reproducibility-tips)
+- [Citation](#citation)
+- [License](#license)
+- [Acknowledgments](#acknowledgments)
 
-At its core, E2Former utilizes **Wigner 6j convolution** for efficient and accurate tensor product operations, enabling the model to capture complex geometric interactions while preserving physical symmetries.
+## Overview
 
-E2Former achieves state-of-the-art performance on molecular property prediction tasks by efficiently scaling attention mechanisms while preserving important physical symmetries. The architecture incorporates both invariant and equivariant features through a carefully designed transformer-based architecture that operates on atomic graphs. The model demonstrates superior performance on challenging benchmarks including MD17, MD22, OC20, and SPICE datasets, achieving chemical accuracy for energy and force predictions.
+E2Former targets large-scale molecular modeling with a design that couples E(3)-equivariance and efficient attention. The codebase is built around FairChem-style configuration and training workflows, with support for single-node single-GPU and multi-GPU execution.
 
-## Key Features
+For model-design details, see [`model_architecture.md`](./model_architecture.md).
 
-- **Wigner 6j Convolution Core**: Leverages Wigner 6j symbols for efficient E(3)-equivariant tensor products ([arXiv:2501.19216](https://arxiv.org/pdf/2501.19216))
-- **E(3)-Equivariant Architecture**: Maintains rotational and translational equivariance through spherical harmonics and tensor products
-- **Modular Design**: Separated components for easy customization and extension
+## Highlights
 
+- Linear-scaling tensor-product design with Wigner-6j-based operations.
+- Equivariant attention blocks for geometry-aware molecular learning.
+- Config-driven experiments across OC22/S2EF-style benchmarks.
+- Practical training utilities, including checkpoint resume and tmux-based launch.
+
+## Repository Layout
+
+```text
+E2Former/
+├── configs/          # Training, dataset, and experiment YAMLs
+├── docs/             # Additional documentation and website assets
+├── src/              # Core model implementation
+│   ├── core/
+│   ├── layers/
+│   ├── models/
+│   ├── utils/
+│   └── wigner6j/
+├── main.py           # Main FairChem-compatible training entrypoint
+├── start_exp.py      # Background launcher (tmux-based)
+├── test_e2former.py  # Model smoke/equivariance checks
+├── simulate.py       # MD rollout entrypoint
+└── env.yml           # Conda environment definition
+```
+
+## Requirements
+
+- Linux with NVIDIA GPU recommended
+- Python 3.10
+- PyTorch 2.4.1 + CUDA 12.1 (defined in `env.yml`)
 
 ## Installation
 
-### Step 1: Install mamba solver for conda (optional but recommended)
-
-```bash
-conda install mamba -n base -c conda-forge
-```
-
-
-### Step 2: Create and activate the environment
-
-```bash
-mamba env create -f env.yml
-```
-
-Or if you prefer using conda directly:
+1. Create and activate the environment:
 
 ```bash
 conda env create -f env.yml
+conda activate e2former
 ```
 
-### Step 3: Install FairChem core package
+Or with `mamba`:
 
 ```bash
-git submodule update --init --recursive
+mamba env create -f env.yml
+conda activate e2former
+```
+
+2. Install `fairchem-core` (required by `main.py`):
+
+```bash
+git clone https://github.com/FAIR-Chem/fairchem.git
 pip install -e fairchem/packages/fairchem-core
 ```
 
-### Step 4: Install pre-commit hooks (for contributors)
+3. Optional development setup:
 
 ```bash
 pre-commit install
 ```
 
-## Model Architecture
+4. Optional MD rollout dependency (`simulate.py`):
 
+```bash
+git clone https://github.com/kyonofx/MDsim.git
+pip install -e MDsim
+```
+
+## Data Setup
+
+Training configs expect FairChem-style datasets (typically LMDB). Before launching training:
+
+- Update `dataset.train.src` and `dataset.val.src` in your YAML.
+- Ensure referenced normalization and linear-reference files exist.
+- Start from one of the provided templates:
+  - `configs/oc22/s2ef/e2former/e2former.yaml`
+  - `configs/example_config_EScAIP.yml`
 
 ## Training
 
-### Single GPU Training
+### Single GPU
 
 ```bash
-python main.py --mode train --config-yml {CONFIG} --run-dir {RUNDIR} --timestamp-id {TIMESTAMP} --checkpoint {CHECKPOINT}
+python main.py \
+  --mode train \
+  --num-gpus 1 \
+  --config-yml configs/oc22/s2ef/e2former/e2former.yaml \
+  --run-dir ./runs \
+  --identifier e2former_oc22
 ```
 
-### Background Training
-
-Use `start_exp.py` to start a training run in the background:
+### Resume from checkpoint
 
 ```bash
-python start_exp.py --config-yml {CONFIG} --cvd {GPU_NUM} --run-dir {RUNDIR} --timestamp-id {TIMESTAMP} --checkpoint {CHECKPOINT}
+python main.py \
+  --mode train \
+  --num-gpus 1 \
+  --config-yml configs/oc22/s2ef/e2former/e2former.yaml \
+  --run-dir ./runs \
+  --identifier e2former_oc22 \
+  --checkpoint /path/to/checkpoint.pt
 ```
 
-### Multi-GPU Training (same node)
+### Background launch (tmux)
 
 ```bash
-torchrun --standalone --nproc_per_node={N} main.py --distributed --num-gpus {N} {...}
+python start_exp.py \
+  --config-yml configs/oc22/s2ef/e2former/e2former.yaml \
+  --mode train \
+  --cvd 0 \
+  --run-dir ./runs \
+  --identifier e2former_bg
 ```
 
-## Testing
+### Multi-GPU (single node)
 
-Run the E2Former test suite to verify the installation:
+```bash
+torchrun --standalone --nproc_per_node 4 main.py \
+  --distributed \
+  --num-gpus 4 \
+  --mode train \
+  --config-yml configs/oc22/s2ef/e2former/e2former.yaml \
+  --run-dir ./runs \
+  --identifier e2former_4gpu
+```
+
+## Validation
+
+Run the smoke/equivariance check:
 
 ```bash
 python test_e2former.py
 ```
 
-This will test the model with different batch sizes and verify equivariance properties.
+## Molecular Dynamics Rollout
 
-For quick performance sanity checks, compare wall-clock throughput across attention kernels and orders on the same system. You should observe the expected scaling improvements from the 6j-based implementation ([arXiv:2501.19216](https://arxiv.org/pdf/2501.19216)).
-
-## Molecular Dynamics Simulation
-
-### Setup
-
-Install the MDSim package:
-
-```bash
-pip install -e MDsim
-```
-
-### Running Simulations
-
-```bash
-python simulate.py --simulation_config_yml {SIM_CONFIG} --model_dir {CHECKPOINT_DIR} --model_config_yml {MODEL_CONFIG} --identifier {IDENTIFIER}
-```
-
-### Example: MD22 Simulation
+After installing MDsim, run:
 
 ```bash
 python simulate.py \
-    --simulation_config_yml configs/s2ef/MD22/datasets/DHA/simulation.yml \
-    --model_dir checkpoints/MD22_DHA/ \
-    --model_config_yml configs/s2ef/MD22/E2Former/DHA.yml \
-    --identifier test_simulation
+  --simulation_config_yml <SIMULATION_YML> \
+  --model_dir <MODEL_DIR> \
+  --model_config_yml <MODEL_CONFIG_YML> \
+  --identifier <RUN_NAME>
 ```
 
-### Analyzing Results
+## Command Reference
 
-```bash
-PYTHONPATH=./ python scripts/analyze_rollouts_md17_22.py \
-    --md_dir checkpoints/MD22_DHA/md_sim_test_simulation \
-    --gt_traj /data/md22/md22_AT-AT.npz \
-    --xlim 25
-```
+Common CLI arguments used in this repository:
 
-## Configuration
+- `--config-yml`: experiment config YAML path.
+- `--mode`: execution mode (for example, `train`).
+- `--run-dir`: directory for checkpoints and logs.
+- `--identifier`: experiment name used in logs/artifacts.
+- `--checkpoint`: checkpoint path for resume/inference.
+- `--num-gpus`: number of GPUs used by `main.py`.
+- `--distributed`: enable distributed training flow.
 
-### Key Configuration Options
+## Configuration Guide
 
-- **Attention Configuration**:
-  - **Attention Type** (`attn_type`): Choose attention order complexity
-    - `zero-order`: Simplest, scalar attention only
-    - `first-order`: Includes vector features  
-    - `second-order`: Includes tensor features
-    - `all-order`: Combines all orders with gating
-  - **Alpha Computation** (`tp_type`):
-    - `QK_alpha`: Query-Key attention (standard transformer-style)
-    - `dot_alpha`: Equiformer-style attention with spherical harmonics
-    - `dot_alpha_small`: Memory-efficient variant of dot_alpha
-  - **Kernel Implementation**: 
-    - `math`: PyTorch default, supports all datatypes and gradient forces
-    - `memory_efficient`: Memory-optimized kernel, supports fp32/fp16
-    - `flash`: Flash attention kernel, fp16 only, best performance
+Key knobs for stability and performance:
 
-- **Model Variants**:
-  - Set `with_cluster: true` for E2formerCluster variant
-  - Configure `encoder: dit` for DIT encoder, or `encoder: transformer` for standard transformer encoder
+- `model.backbone.max_neighbors`, `model.backbone.max_radius`
+- `model.backbone.num_layers`, `model.backbone.num_attn_heads`
+- `model.backbone.attn_type`, `model.backbone.atten_name`
+- `model.backbone.use_fp16_backbone`, `model.backbone.use_compile`
+- `optim.batch_size`, `optim.eval_batch_size`, `optim.lr_initial`
 
-- **Equivariant Settings**:
-  - `irreps_node_embedding`: Irreducible representations for node features (e.g., "128x0e+128x1e+128x2e")
-  - `irreps_head`: Irreps for attention heads (e.g., "32x0e+32x1e+32x2e")
-  - `lmax`: Maximum angular momentum for spherical harmonics
-  - `num_layers`: Number of transformer blocks
+## Reproducibility Tips
 
-### Example Configuration
-
-```yaml
-model:
-  backbone:
-    irreps_node_embedding: "128x0e+128x1e+128x2e"
-    num_layers: 8
-    encoder: dit
-    with_cluster: false
-    attn_type: "first-order"
-    max_neighbors: 20
-    max_radius: 6.0
-```
-
-See [`configs/example_config_E2Former.yml`](configs/example_config_E2Former.yml) for a detailed configuration example.
-
-## Project Structure
-
-```
-src/
-├── models/                      # Main model implementations
-│   ├── E2Former_wrapper.py     # Model wrapper and data preprocessing
-│   ├── e2former.py             # Original E2Former implementation
-│   └── e2former_modular.py     # Refactored modular version
-├── layers/                      # Neural network layers
-│   ├── attention/              # Modular attention system (NEW)
-│   │   ├── base.py            # Base attention class
-│   │   ├── sparse.py          # Sparse attention implementation
-│   │   ├── cluster.py         # Cluster-aware attention
-│   │   ├── orders.py          # Attention order implementations
-│   │   ├── alpha.py           # Alpha computation modules
-│   │   ├── utils.py           # Shared utilities
-│   │   └── compat.py          # Backward compatibility
-│   ├── blocks.py               # Transformer blocks
-│   ├── embeddings.py           # Embedding networks
-│   ├── interaction_blocks.py  # Molecular interactions
-│   ├── dit.py                  # DIT encoder blocks
-│   └── moe.py                  # Mixture of experts
-├── core/                        # Base classes and utilities
-│   ├── module_utils.py        # Core utility functions
-│   └── e2former_utils.py      # E2Former specific utilities
-├── configs/                     # Configuration management
-│   └── E2Former_configs.py    # Configuration dataclasses
-└── wigner6j/                   # Wigner 6j symbols
-    └── tensor_product.py      # E(3)-equivariant operations
-```
-
-
-## Important Notes
-
-- **Gradient Forces**: When using gradient-based force calculations, disable `torch.compile` as it doesn't support second-order gradients
-- **Memory Management**: Adjust `max_num_nodes_per_batch` for optimal GPU memory usage
-- **FP16 Training**: Use `use_fp16_backbone` or AutoMixedPrecision for improved performance
-- **Attention Types**: The same channels must be used across all irreps orders (e.g., "128x0e+128x1e+128x2e")
-- **Complexity expectations**: Training/inference time should scale primarily with the number of nodes rather than edges due to node-local 6j recoupling.
+- Keep each run tied to one explicit config file and `--identifier`.
+- Log checkpoint paths used for resume/inference.
+- Run `python test_e2former.py` before long experiments.
+- Scale batch size and `max_neighbors` gradually when moving to larger GPUs.
 
 ## Citation
 
-If you find E2Former useful in your research, please consider citing:
+If you use this repository, please cite:
 
 ```bibtex
 @article{li2025e2former,
@@ -222,10 +218,10 @@ If you find E2Former useful in your research, please consider citing:
 }
 ```
 
+## License
 
-
+This project is released under the [MIT License](./LICENSE).
 
 ## Acknowledgments
 
-E2Former builds upon several excellent works in the field of neural network interatomic potentials and equivariant neural networks. We particularly acknowledge the FairChem framework for providing the foundation for this implementation.
-We also acknowledge ESCAIP for related ideas and contributions to equivariant molecular modeling.
+E2Former builds on the FairChem ecosystem and prior work in equivariant molecular machine learning.
