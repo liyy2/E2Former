@@ -1,19 +1,14 @@
-<div align="center">
-
-# E2Former
-
-**An Efficient and Equivariant Transformer with Linear-Scaling Tensor Products**
+# [NeurIPS 2025 Spotlight] E2Former: An Efficient and Equivariant Transformer with Linear-Scaling Tensor Products
 
 [Paper (OpenReview)](https://openreview.net/forum?id=ls5L4IMEwt) • [Paper (arXiv)](https://arxiv.org/abs/2501.19216) • [Model Architecture](model_architecture.md) • [Quick start](#quick-start) • [Citation](#citation)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![NeurIPS 2025 Spotlight](https://img.shields.io/badge/NeurIPS%202025-Spotlight-1f6feb)](https://openreview.net/forum?id=ls5L4IMEwt)
 [![Python](https://img.shields.io/badge/Python-3.10%2B-informational)](#installation)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.4.1-red)](#requirements)
 
-</div>
-
 E2Former is an E(3)-equivariant molecular foundation model for energy and force prediction. It combines efficient Wigner-6j-based tensor products with equivariant attention to improve scalability while preserving geometric symmetries.
+
+This repository is adapted from EScAIP and FairChem.
 
 The repository includes:
 
@@ -92,7 +87,6 @@ pip install -e MDsim
 Use one of the provided templates:
 
 - `configs/oc22/s2ef/e2former/e2former.yaml`
-- `configs/example_config_EScAIP.yml`
 
 Before training, update dataset paths in your config:
 
@@ -212,7 +206,7 @@ Common high-impact settings:
 Start with:
 
 - `model_architecture.md`
-- `configs/example_config_EScAIP.yml`
+- `configs/oc22/s2ef/e2former/e2former.yaml`
 - `test_e2former.py`
 
 ## Citation
