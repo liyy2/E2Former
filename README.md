@@ -1,4 +1,4 @@
-# \[NeurIPS 2025 Spotlight\] E2Former
+#  E2Former
 
 ### An Efficient and Equivariant Transformer with Linear-Scaling Tensor Products
 
