@@ -1,7 +1,10 @@
-# [NeurIPS 2025 Spotlight] E2Former: An Efficient and Equivariant Transformer with Linear-Scaling Tensor Products
+# E2Former
+
+**NeurIPS 2025 Spotlight** ([OpenReview](https://openreview.net/forum?id=ls5L4IMEwt))
 
 [Paper (OpenReview)](https://openreview.net/forum?id=ls5L4IMEwt) • [Paper (arXiv)](https://arxiv.org/abs/2501.19216) • [Model Architecture](model_architecture.md) • [Quick start](#quick-start) • [Citation](#citation)
 
+[![NeurIPS 2025 Spotlight](https://img.shields.io/badge/NeurIPS%202025-Spotlight-1f6feb)](https://openreview.net/forum?id=ls5L4IMEwt)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/Python-3.10%2B-informational)](#installation)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.4.1-red)](#requirements)
