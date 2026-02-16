@@ -251,8 +251,6 @@ Start with:
 
 ## Citation
 
-> [!IMPORTANT]
-> If you use E2Former in your work, please cite the NeurIPS 2025 paper below.
 
 If you use E2Former in your work, please cite:
 
