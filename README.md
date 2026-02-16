@@ -88,6 +88,15 @@ pip install -e MDsim
 
 ## Quick start
 
+<p>
+  <img src="https://img.shields.io/badge/Step%201-Configure-1f6feb" alt="Step 1 Configure" />
+  <img src="https://img.shields.io/badge/Step%202-Train-2ea44f" alt="Step 2 Train" />
+  <img src="https://img.shields.io/badge/Step%203-Validate%20%26%20Simulate-f59e0b" alt="Step 3 Validate and Simulate" />
+</p>
+
+> [!TIP]
+> Start with `configs/oc22/s2ef/e2former/e2former.yaml`, then set your dataset paths before running training.
+
 ### A) Configure data and experiment YAML
 
 Use one of the provided templates:
@@ -101,7 +110,8 @@ Before training, update dataset paths in your config:
 
 ### B) Train E2Former
 
-Single GPU:
+<details open>
+<summary><strong>Single GPU</strong></summary>
 
 ```bash
 python main.py \
@@ -111,8 +121,10 @@ python main.py \
   --run-dir ./runs \
   --identifier e2former_oc22
 ```
+</details>
 
-Resume from checkpoint:
+<details>
+<summary><strong>Resume from checkpoint</strong></summary>
 
 ```bash
 python main.py \
@@ -123,8 +135,10 @@ python main.py \
   --identifier e2former_oc22 \
   --checkpoint /path/to/checkpoint.pt
 ```
+</details>
 
-Background run via tmux:
+<details>
+<summary><strong>Background run via tmux</strong></summary>
 
 ```bash
 python start_exp.py \
@@ -134,8 +148,10 @@ python start_exp.py \
   --run-dir ./runs \
   --identifier e2former_bg
 ```
+</details>
 
-Multi-GPU (single node):
+<details>
+<summary><strong>Multi-GPU (single node)</strong></summary>
 
 ```bash
 torchrun --standalone --nproc_per_node 4 main.py \
@@ -146,16 +162,20 @@ torchrun --standalone --nproc_per_node 4 main.py \
   --run-dir ./runs \
   --identifier e2former_4gpu
 ```
+</details>
 
 ### C) Validate and run MD rollout
 
-Smoke/equivariance check:
+<details open>
+<summary><strong>Smoke/equivariance check</strong></summary>
 
 ```bash
 python test_e2former.py
 ```
+</details>
 
-Molecular dynamics rollout:
+<details>
+<summary><strong>Molecular dynamics rollout</strong></summary>
 
 ```bash
 python simulate.py \
@@ -164,18 +184,17 @@ python simulate.py \
   --model_config_yml <MODEL_CONFIG_YML> \
   --identifier <RUN_NAME>
 ```
+</details>
 
 ## Where key code lives
 
-- E2Former model (FairChem-facing wrapper): `src/models/E2Former_wrapper.py`  
-  Main class: `E2FormerBackbone`
-- E2Former core architecture (transformer stack): `src/models/e2former_main.py`  
-  Main class: `E2former`
-- Wigner-6j convolution primitive: `src/wigner6j/tensor_product.py`  
-  Main class: `FullyConnectedTensorProductWigner6j`
-- Arbitrary-order E(3)-equivariant tensor product used by attention: `src/wigner6j/tensor_product.py`  
-  Main class: `E2TensorProductArbitraryOrder`
-- Attention modules that call the arbitrary-order tensor product: `src/layers/attention/orders.py`
+| Component | Location | Main class / symbol |
+|---|---|---|
+| E2Former model (FairChem-facing wrapper) | `src/models/E2Former_wrapper.py` | `E2FormerBackbone` |
+| E2Former core architecture (transformer stack) | `src/models/e2former_main.py` | `E2former` |
+| Wigner-6j convolution primitive | `src/wigner6j/tensor_product.py` | `FullyConnectedTensorProductWigner6j` |
+| Arbitrary-order E(3)-equivariant tensor product (attention) | `src/wigner6j/tensor_product.py` | `E2TensorProductArbitraryOrder` |
+| Attention modules calling arbitrary-order tensor products | `src/layers/attention/orders.py` | `FirstOrderAttention`, `SecondOrderAttention`, `ArbitraryOrderAttention` |
 
 ## Repository layout
 
@@ -201,29 +220,35 @@ python simulate.py \
 
 Common high-impact settings:
 
-- `model.backbone.max_neighbors`, `model.backbone.max_radius`
-- `model.backbone.num_layers`, `model.backbone.num_attn_heads`
-- `model.backbone.attn_type`, `model.backbone.atten_name`
-- `model.backbone.use_fp16_backbone`, `model.backbone.use_compile`
-- `optim.batch_size`, `optim.eval_batch_size`, `optim.lr_initial`
+| Config keys | Why it matters |
+|---|---|
+| `model.backbone.max_neighbors`, `model.backbone.max_radius` | Controls graph density and geometric context range. |
+| `model.backbone.num_layers`, `model.backbone.num_attn_heads` | Main capacity/performance scaling knobs. |
+| `model.backbone.attn_type`, `model.backbone.atten_name` | Selects attention formulation and kernel backend. |
+| `model.backbone.use_fp16_backbone`, `model.backbone.use_compile` | Throughput and memory optimization controls. |
+| `optim.batch_size`, `optim.eval_batch_size`, `optim.lr_initial` | Core optimization stability/performance parameters. |
 
 ## Documentation
 
 Start with:
 
-- `model_architecture.md`
-- `configs/oc22/s2ef/e2former/e2former.yaml`
-- `test_e2former.py`
+| Resource | Purpose |
+|---|---|
+| `model_architecture.md` | High-level architecture rationale and design notes. |
+| `configs/oc22/s2ef/e2former/e2former.yaml` | Primary training template for this repository. |
+| `test_e2former.py` | Smoke/equivariance checks for installation and basic model sanity. |
 
 ## Related E2Former variants
 
-- `E2Former-LSR` paper: [Scalable Machine Learning Force Fields for Macromolecular Systems Through Long-Range Aware Message Passing](https://arxiv.org/abs/2601.03774)
-- `E2Former-LSR` repository: [IQuestLab/UBio-MolFM](https://github.com/IQuestLab/UBio-MolFM)
-- `E2Former-LSR` checkpoint: [IQuestLab/UBio-E2Former-LSR](https://huggingface.co/IQuestLab/UBio-E2Former-LSR)
-- `E2Former-V2` paper: [E2Former-V2: On-the-Fly Equivariant Attention with Linear Activation Memory](https://arxiv.org/abs/2601.16622)
-- `E2Former-V2` repository: [IQuestLab/UBio-MolFM (e2formerv2 branch)](https://github.com/IQuestLab/UBio-MolFM/tree/e2formerv2)
+| Variant | Paper | Repository | Artifact |
+|---|---|---|---|
+| `E2Former-LSR` | [Scalable Machine Learning Force Fields for Macromolecular Systems Through Long-Range Aware Message Passing](https://arxiv.org/abs/2601.03774) | [IQuestLab/UBio-MolFM](https://github.com/IQuestLab/UBio-MolFM) | [UBio-E2Former-LSR](https://huggingface.co/IQuestLab/UBio-E2Former-LSR) |
+| `E2Former-V2` | [E2Former-V2: On-the-Fly Equivariant Attention with Linear Activation Memory](https://arxiv.org/abs/2601.16622) | [IQuestLab/UBio-MolFM (e2formerv2)](https://github.com/IQuestLab/UBio-MolFM/tree/e2formerv2) | Included in the `e2formerv2` branch |
 
 ## Citation
+
+> [!IMPORTANT]
+> If you use E2Former in your work, please cite the NeurIPS 2025 paper below.
 
 If you use E2Former in your work, please cite:
 
@@ -241,7 +266,13 @@ OpenReview page: <https://openreview.net/forum?id=ls5L4IMEwt>
 
 ## License
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
 This project is released under the [MIT License](LICENSE).
 
 ## Acknowledgments
+
+[![Adapted from EScAIP](https://img.shields.io/badge/Adapted%20from-EScAIP-7e57c2)](https://github.com/ASK-Berkeley/EScAIP)
+[![Built on FairChem](https://img.shields.io/badge/Built%20on-FairChem-0ea5e9)](https://github.com/FAIR-Chem/fairchem)
+
 This repository is adapted from [EScAIP](https://github.com/ASK-Berkeley/EScAIP) and [FairChem](https://github.com/FAIR-Chem/fairchem).
