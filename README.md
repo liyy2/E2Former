@@ -1,8 +1,10 @@
-<div align="center">
-
-#  E2Former
+# \[NeurIPS 2025 Spotlight\] E2Former
 
 ### An Efficient and Equivariant Transformer with Linear-Scaling Tensor Products
+
+
+
+
 
 [Paper (OpenReview)](https://openreview.net/forum?id=ls5L4IMEwt) • [Paper (arXiv)](https://arxiv.org/abs/2501.19216) • [Model Architecture](model_architecture.md) • [Quick start](#quick-start) • [Citation](#citation)
 
@@ -10,8 +12,6 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/Python-3.10%2B-informational)](#installation)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.4.1-red)](#requirements)
-
-</div>
 
 E2Former is an E(3)-equivariant molecular foundation model for energy and force prediction. It combines efficient Wigner-6j-based tensor products with equivariant attention to improve scalability while preserving geometric symmetries.
 
