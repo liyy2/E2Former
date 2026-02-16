@@ -40,6 +40,7 @@ The repository includes:
 - [Repository layout](#repository-layout)
 - [Configuration guide](#configuration-guide)
 - [Documentation](#documentation)
+- [Related E2Former variants](#related-e2former-variants)
 - [Citation](#citation)
 - [License](#license)
 
@@ -213,6 +214,14 @@ Start with:
 - `model_architecture.md`
 - `configs/oc22/s2ef/e2former/e2former.yaml`
 - `test_e2former.py`
+
+## Related E2Former variants
+
+- `E2Former-LSR` paper: [Scalable Machine Learning Force Fields for Macromolecular Systems Through Long-Range Aware Message Passing](https://arxiv.org/abs/2601.03774)
+- `E2Former-LSR` repository: [IQuestLab/UBio-MolFM](https://github.com/IQuestLab/UBio-MolFM)
+- `E2Former-LSR` checkpoint: [IQuestLab/UBio-E2Former-LSR](https://huggingface.co/IQuestLab/UBio-E2Former-LSR)
+- `E2Former-V2` paper: [E2Former-V2: On-the-Fly Equivariant Attention with Linear Activation Memory](https://arxiv.org/abs/2601.16622)
+- `E2Former-V2` repository: [IQuestLab/UBio-MolFM (e2formerv2 branch)](https://github.com/IQuestLab/UBio-MolFM/tree/e2formerv2)
 
 ## Citation
 
