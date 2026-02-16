@@ -195,7 +195,7 @@ python simulate.py \
 | E2Former core architecture (transformer stack) | `src/models/e2former_main.py` | `E2former` |
 | Wigner-6j convolution primitive | `src/wigner6j/tensor_product.py` | `FullyConnectedTensorProductWigner6j` |
 | Arbitrary-order E(3)-equivariant tensor product (attention) | `src/wigner6j/tensor_product.py` | `E2TensorProductArbitraryOrder` |
-| Attention modules calling arbitrary-order tensor products | `src/layers/attention/orders.py` | `FirstOrderAttention`, `SecondOrderAttention`, `ArbitraryOrderAttention` |
+| Attention modules calling arbitrary-order tensor products | `src/layers/attention/orders.py` | `FirstOrderAttention`, `SecondOrderAttention`, `AllOrderAttention` |
 
 ## Repository layout
 
