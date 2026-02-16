@@ -1,8 +1,6 @@
-#  E2Former: An Efficient and Equivariant Transformer with Linear-Scaling Tensor Products
+# E2Former
 
-
-
-
+### An Efficient and Equivariant Transformer with Linear-Scaling Tensor Products
 
 [Paper (OpenReview)](https://openreview.net/forum?id=ls5L4IMEwt) • [Paper (arXiv)](https://arxiv.org/abs/2501.19216) • [Model Architecture](model_architecture.md) • [Quick start](#quick-start) • [Citation](#citation)
 
@@ -13,15 +11,18 @@
 
 E2Former is an E(3)-equivariant molecular foundation model for energy and force prediction. It combines efficient Wigner-6j-based tensor products with equivariant attention to improve scalability while preserving geometric symmetries.
 
-
+> [!NOTE]
+> This repository is adapted from [EScAIP](https://github.com/ASK-Berkeley/EScAIP) and [FairChem](https://github.com/FAIR-Chem/fairchem).
 
 The repository includes:
 
-- `src/`: core E2Former model components (layers, equivariant blocks, wrappers)
-- `configs/`: experiment, dataset, and optimization YAMLs
-- `main.py`: FairChem-style training entrypoint
-- `start_exp.py`: background launcher for tmux-based jobs
-- `simulate.py`: molecular dynamics rollout entrypoint
+| Path | Purpose |
+|---|---|
+| `src/` | Core E2Former model components (layers, equivariant blocks, wrappers). |
+| `configs/` | Experiment, dataset, and optimization YAML files. |
+| `main.py` | FairChem-style training entrypoint. |
+| `start_exp.py` | Background launcher for tmux-based jobs. |
+| `simulate.py` | Molecular dynamics rollout entrypoint. |
 
 ## Method overview
 
@@ -46,11 +47,16 @@ The repository includes:
 
 ## Requirements
 
-- Linux with NVIDIA GPU recommended
-- Python 3.10
-- PyTorch 2.4.1 + CUDA 12.1 (from `env.yml`)
+| Component | Version / Expectation |
+|---|---|
+| OS | Linux with NVIDIA GPU recommended |
+| Python | 3.10 |
+| PyTorch | 2.4.1 + CUDA 12.1 (from `env.yml`) |
 
 ## Installation
+
+> [!TIP]
+> Use `mamba` when available for faster environment solving.
 
 ### 1) Create the environment
 
@@ -88,11 +94,11 @@ pip install -e MDsim
 
 ## Quick start
 
-<p>
-  <img src="https://img.shields.io/badge/Step%201-Configure-1f6feb" alt="Step 1 Configure" />
-  <img src="https://img.shields.io/badge/Step%202-Train-2ea44f" alt="Step 2 Train" />
-  <img src="https://img.shields.io/badge/Step%203-Validate%20%26%20Simulate-f59e0b" alt="Step 3 Validate and Simulate" />
-</p>
+| Phase | Goal | Output |
+|---|---|---|
+| A) Configure | Point config to your data and experiment settings. | Ready-to-run YAML |
+| B) Train | Launch single-/multi-GPU training jobs. | Checkpoints + logs |
+| C) Validate / Simulate | Run smoke checks and MD rollout. | Sanity metrics + trajectories |
 
 > [!TIP]
 > Start with `configs/oc22/s2ef/e2former/e2former.yaml`, then set your dataset paths before running training.
@@ -218,6 +224,9 @@ python simulate.py \
 
 ## Configuration guide
 
+> [!IMPORTANT]
+> Start tuning graph radius/neighbors and batch size first; these usually dominate memory and speed behavior.
+
 Common high-impact settings:
 
 | Config keys | Why it matters |
@@ -271,8 +280,5 @@ OpenReview page: <https://openreview.net/forum?id=ls5L4IMEwt>
 This project is released under the [MIT License](LICENSE).
 
 ## Acknowledgments
-
-[![Adapted from EScAIP](https://img.shields.io/badge/Adapted%20from-EScAIP-7e57c2)](https://github.com/ASK-Berkeley/EScAIP)
-[![Built on FairChem](https://img.shields.io/badge/Built%20on-FairChem-0ea5e9)](https://github.com/FAIR-Chem/fairchem)
 
 This repository is adapted from [EScAIP](https://github.com/ASK-Berkeley/EScAIP) and [FairChem](https://github.com/FAIR-Chem/fairchem).
