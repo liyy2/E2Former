@@ -1,6 +1,4 @@
-# E2Former
-
-### An Efficient and Equivariant Transformer with Linear-Scaling Tensor Products
+# E2Former: An Efficient and Equivariant Transformer with Linear-Scaling Tensor Products
 
 [Paper (OpenReview)](https://openreview.net/forum?id=ls5L4IMEwt) • [Paper (arXiv)](https://arxiv.org/abs/2501.19216) • [Model Architecture](model_architecture.md) • [Quick start](#quick-start) • [Citation](#citation)
 
@@ -10,9 +8,6 @@
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.4.1-red)](#requirements)
 
 E2Former is an E(3)-equivariant molecular foundation model for energy and force prediction. It combines efficient Wigner-6j-based tensor products with equivariant attention to improve scalability while preserving geometric symmetries.
-
-> [!NOTE]
-> This repository is adapted from [EScAIP](https://github.com/ASK-Berkeley/EScAIP) and [FairChem](https://github.com/FAIR-Chem/fairchem).
 
 The repository includes:
 
@@ -274,10 +269,7 @@ OpenReview page: <https://openreview.net/forum?id=ls5L4IMEwt>
 ```
 
 ## License
-
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-
-This project is released under the [MIT License](LICENSE).
+This project is released under the MIT License.
 
 ## Acknowledgments
 
