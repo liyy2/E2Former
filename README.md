@@ -4,9 +4,10 @@
 
 **An Efficient and Equivariant Transformer with Linear-Scaling Tensor Products**
 
-[Paper](https://openreview.net/pdf?id=ls5L4IMEwt) • [OpenReview](https://openreview.net/forum?id=ls5L4IMEwt) • [Model Architecture](model_architecture.md) • [Quick start](#quick-start) • [Citation](#citation)
+[Paper (OpenReview)](https://openreview.net/forum?id=ls5L4IMEwt) • [Paper (arXiv)](https://arxiv.org/abs/2501.19216) • [Model Architecture](model_architecture.md) • [Quick start](#quick-start) • [Citation](#citation)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![NeurIPS 2025 Spotlight](https://img.shields.io/badge/NeurIPS%202025-Spotlight-1f6feb)](https://openreview.net/forum?id=ls5L4IMEwt)
 [![Python](https://img.shields.io/badge/Python-3.10%2B-informational)](#installation)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.4.1-red)](#requirements)
 
@@ -35,6 +36,7 @@ The repository includes:
 
 - [Installation](#installation)
 - [Quick start](#quick-start)
+- [Where key code lives](#where-key-code-lives)
 - [Repository layout](#repository-layout)
 - [Configuration guide](#configuration-guide)
 - [Documentation](#documentation)
@@ -162,6 +164,18 @@ python simulate.py \
   --model_config_yml <MODEL_CONFIG_YML> \
   --identifier <RUN_NAME>
 ```
+
+## Where key code lives
+
+- E2Former model (FairChem-facing wrapper): `src/models/E2Former_wrapper.py`  
+  Main class: `E2FormerBackbone`
+- E2Former core architecture (transformer stack): `src/models/e2former_main.py`  
+  Main class: `E2former`
+- Wigner-6j convolution primitive: `src/wigner6j/tensor_product.py`  
+  Main class: `FullyConnectedTensorProductWigner6j`
+- Arbitrary-order E(3)-equivariant tensor product used by attention: `src/wigner6j/tensor_product.py`  
+  Main class: `E2TensorProductArbitraryOrder`
+- Attention modules that call the arbitrary-order tensor product: `src/layers/attention/orders.py`
 
 ## Repository layout
 
