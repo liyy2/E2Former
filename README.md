@@ -1,116 +1,105 @@
+<div align="center">
+
 # E2Former
 
-Official implementation of **E2Former**, an efficient and scalable E(3)-equivariant transformer for molecular energy and force prediction.
+**An Efficient and Equivariant Transformer with Linear-Scaling Tensor Products**
 
-[Paper (arXiv:2501.19216)](https://arxiv.org/abs/2501.19216) | [License: MIT](./LICENSE)
+[Paper](https://openreview.net/pdf?id=ls5L4IMEwt) • [OpenReview](https://openreview.net/forum?id=ls5L4IMEwt) • [Model Architecture](model_architecture.md) • [Quick start](#quick-start) • [Citation](#citation)
 
-![E2Former architecture](assets/fig2.png)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/Python-3.10%2B-informational)](#installation)
+[![PyTorch](https://img.shields.io/badge/PyTorch-2.4.1-red)](#requirements)
 
-## Table of Contents
+</div>
 
-- [Overview](#overview)
-- [Highlights](#highlights)
-- [Repository Layout](#repository-layout)
-- [Requirements](#requirements)
+E2Former is an E(3)-equivariant molecular foundation model for energy and force prediction. It combines efficient Wigner-6j-based tensor products with equivariant attention to improve scalability while preserving geometric symmetries.
+
+The repository includes:
+
+- `src/`: core E2Former model components (layers, equivariant blocks, wrappers)
+- `configs/`: experiment, dataset, and optimization YAMLs
+- `main.py`: FairChem-style training entrypoint
+- `start_exp.py`: background launcher for tmux-based jobs
+- `simulate.py`: molecular dynamics rollout entrypoint
+
+## Method overview
+
+<p align="center">
+  <img src="assets/fig2.png" width="900" alt="E2Former architecture with Wigner-6j convolution and equivariant transformer blocks for molecular modeling." />
+</p>
+<p align="center">
+  <em>Figure. E2Former architecture for scalable E(3)-equivariant molecular modeling.</em>
+</p>
+
+## Contents
+
 - [Installation](#installation)
-- [Data Setup](#data-setup)
-- [Training](#training)
-- [Validation](#validation)
-- [Molecular Dynamics Rollout](#molecular-dynamics-rollout)
-- [Command Reference](#command-reference)
-- [Configuration Guide](#configuration-guide)
-- [Reproducibility Tips](#reproducibility-tips)
+- [Quick start](#quick-start)
+- [Repository layout](#repository-layout)
+- [Configuration guide](#configuration-guide)
+- [Documentation](#documentation)
 - [Citation](#citation)
 - [License](#license)
-- [Acknowledgments](#acknowledgments)
-
-## Overview
-
-E2Former targets large-scale molecular modeling with a design that couples E(3)-equivariance and efficient attention. The codebase is built around FairChem-style configuration and training workflows, with support for single-node single-GPU and multi-GPU execution.
-
-For model-design details, see [`model_architecture.md`](./model_architecture.md).
-
-## Highlights
-
-- Linear-scaling tensor-product design with Wigner-6j-based operations.
-- Equivariant attention blocks for geometry-aware molecular learning.
-- Config-driven experiments across OC22/S2EF-style benchmarks.
-- Practical training utilities, including checkpoint resume and tmux-based launch.
-
-## Repository Layout
-
-```text
-E2Former/
-├── configs/          # Training, dataset, and experiment YAMLs
-├── docs/             # Additional documentation and website assets
-├── src/              # Core model implementation
-│   ├── core/
-│   ├── layers/
-│   ├── models/
-│   ├── utils/
-│   └── wigner6j/
-├── main.py           # Main FairChem-compatible training entrypoint
-├── start_exp.py      # Background launcher (tmux-based)
-├── test_e2former.py  # Model smoke/equivariance checks
-├── simulate.py       # MD rollout entrypoint
-└── env.yml           # Conda environment definition
-```
 
 ## Requirements
 
 - Linux with NVIDIA GPU recommended
 - Python 3.10
-- PyTorch 2.4.1 + CUDA 12.1 (defined in `env.yml`)
+- PyTorch 2.4.1 + CUDA 12.1 (from `env.yml`)
 
 ## Installation
 
-1. Create and activate the environment:
+### 1) Create the environment
 
 ```bash
 conda env create -f env.yml
 conda activate e2former
 ```
 
-Or with `mamba`:
+Or with mamba:
 
 ```bash
 mamba env create -f env.yml
 conda activate e2former
 ```
 
-2. Install `fairchem-core` (required by `main.py`):
+### 2) Install `fairchem-core` dependency
 
 ```bash
 git clone https://github.com/FAIR-Chem/fairchem.git
 pip install -e fairchem/packages/fairchem-core
 ```
 
-3. Optional development setup:
+### 3) Optional development tooling
 
 ```bash
 pre-commit install
 ```
 
-4. Optional MD rollout dependency (`simulate.py`):
+### 4) Optional MD dependency (`simulate.py`)
 
 ```bash
 git clone https://github.com/kyonofx/MDsim.git
 pip install -e MDsim
 ```
 
-## Data Setup
+## Quick start
 
-Training configs expect FairChem-style datasets (typically LMDB). Before launching training:
+### A) Configure data and experiment YAML
 
-- Update `dataset.train.src` and `dataset.val.src` in your YAML.
-- Ensure referenced normalization and linear-reference files exist.
-- Start from one of the provided templates:
-  - `configs/oc22/s2ef/e2former/e2former.yaml`
-  - `configs/example_config_EScAIP.yml`
+Use one of the provided templates:
 
-## Training
+- `configs/oc22/s2ef/e2former/e2former.yaml`
+- `configs/example_config_EScAIP.yml`
 
-### Single GPU
+Before training, update dataset paths in your config:
+
+- `dataset.train.src`
+- `dataset.val.src`
+
+### B) Train E2Former
+
+Single GPU:
 
 ```bash
 python main.py \
@@ -121,7 +110,7 @@ python main.py \
   --identifier e2former_oc22
 ```
 
-### Resume from checkpoint
+Resume from checkpoint:
 
 ```bash
 python main.py \
@@ -133,7 +122,7 @@ python main.py \
   --checkpoint /path/to/checkpoint.pt
 ```
 
-### Background launch (tmux)
+Background run via tmux:
 
 ```bash
 python start_exp.py \
@@ -144,7 +133,7 @@ python start_exp.py \
   --identifier e2former_bg
 ```
 
-### Multi-GPU (single node)
+Multi-GPU (single node):
 
 ```bash
 torchrun --standalone --nproc_per_node 4 main.py \
@@ -156,17 +145,15 @@ torchrun --standalone --nproc_per_node 4 main.py \
   --identifier e2former_4gpu
 ```
 
-## Validation
+### C) Validate and run MD rollout
 
-Run the smoke/equivariance check:
+Smoke/equivariance check:
 
 ```bash
 python test_e2former.py
 ```
 
-## Molecular Dynamics Rollout
-
-After installing MDsim, run:
+Molecular dynamics rollout:
 
 ```bash
 python simulate.py \
@@ -176,21 +163,29 @@ python simulate.py \
   --identifier <RUN_NAME>
 ```
 
-## Command Reference
+## Repository layout
 
-Common CLI arguments used in this repository:
+```text
+.
+├── configs/                   # Training, dataset, and experiment YAMLs
+├── src/                       # E2Former implementation
+│   ├── core/
+│   ├── layers/
+│   ├── models/
+│   ├── utils/
+│   └── wigner6j/
+├── assets/                    # Figures used in README/docs
+├── main.py                    # Main training/inference entrypoint
+├── start_exp.py               # tmux-based background training launcher
+├── test_e2former.py           # Smoke/equivariance test script
+├── simulate.py                # Molecular dynamics rollout entrypoint
+├── model_architecture.md      # Architecture notes
+└── env.yml                    # Conda environment file
+```
 
-- `--config-yml`: experiment config YAML path.
-- `--mode`: execution mode (for example, `train`).
-- `--run-dir`: directory for checkpoints and logs.
-- `--identifier`: experiment name used in logs/artifacts.
-- `--checkpoint`: checkpoint path for resume/inference.
-- `--num-gpus`: number of GPUs used by `main.py`.
-- `--distributed`: enable distributed training flow.
+## Configuration guide
 
-## Configuration Guide
-
-Key knobs for stability and performance:
+Common high-impact settings:
 
 - `model.backbone.max_neighbors`, `model.backbone.max_radius`
 - `model.backbone.num_layers`, `model.backbone.num_attn_heads`
@@ -198,30 +193,30 @@ Key knobs for stability and performance:
 - `model.backbone.use_fp16_backbone`, `model.backbone.use_compile`
 - `optim.batch_size`, `optim.eval_batch_size`, `optim.lr_initial`
 
-## Reproducibility Tips
+## Documentation
 
-- Keep each run tied to one explicit config file and `--identifier`.
-- Log checkpoint paths used for resume/inference.
-- Run `python test_e2former.py` before long experiments.
-- Scale batch size and `max_neighbors` gradually when moving to larger GPUs.
+Start with:
+
+- `model_architecture.md`
+- `configs/example_config_EScAIP.yml`
+- `test_e2former.py`
 
 ## Citation
 
-If you use this repository, please cite:
+If you use E2Former in your work, please cite:
+
+OpenReview page: <https://openreview.net/forum?id=ls5L4IMEwt>
 
 ```bibtex
-@article{li2025e2former,
-  title={E2Former: A Linear-time Efficient and Equivariant Transformer for Scalable Molecular Modeling},
-  author={Li, Yunyang and Huang, Lin and Ding, Zhihao and Wang, Chu and Wei, Xinran and Yang, Han and Wang, Zun and Liu, Chang and Shi, Yu and Jin, Peiran and others},
-  journal={arXiv preprint arXiv:2501.19216},
-  year={2025}
+@inproceedings{li2025eformer,
+  title={E2Former: An Efficient and Equivariant Transformer with Linear-Scaling Tensor Products},
+  author={Yunyang Li and Lin Huang and Zhihao Ding and Xinran Wei and Chu Wang and Han Yang and Zun Wang and Chang Liu and Yu Shi and Peiran Jin and Tao Qin and Mark Gerstein and Jia Zhang},
+  booktitle={The Thirty-ninth Annual Conference on Neural Information Processing Systems},
+  year={2025},
+  url={https://openreview.net/forum?id=ls5L4IMEwt}
 }
 ```
 
 ## License
 
-This project is released under the [MIT License](./LICENSE).
-
-## Acknowledgments
-
-E2Former builds on the FairChem ecosystem and prior work in equivariant molecular machine learning.
+This project is released under the [MIT License](LICENSE).
