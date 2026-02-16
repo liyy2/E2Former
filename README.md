@@ -254,8 +254,6 @@ Start with:
 
 If you use E2Former in your work, please cite:
 
-OpenReview page: <https://openreview.net/forum?id=ls5L4IMEwt>
-
 ```bibtex
 @inproceedings{li2025eformer,
   title={E2Former: An Efficient and Equivariant Transformer with Linear-Scaling Tensor Products},
