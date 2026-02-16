@@ -237,4 +237,4 @@ OpenReview page: <https://openreview.net/forum?id=ls5L4IMEwt>
 This project is released under the [MIT License](LICENSE).
 
 ## Acknowledgments
-This repository is adapted from EScAIP and FairChem.
+This repository is adapted from [EScAIP](https://github.com/ASK-Berkeley/EScAIP) and [FairChem](https://github.com/FAIR-Chem/fairchem).
