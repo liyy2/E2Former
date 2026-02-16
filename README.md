@@ -1,6 +1,4 @@
-#  E2Former
-
-### An Efficient and Equivariant Transformer with Linear-Scaling Tensor Products
+#  E2Former: An Efficient and Equivariant Transformer with Linear-Scaling Tensor Products
 
 
 
