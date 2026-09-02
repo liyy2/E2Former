@@ -1,0 +1,7 @@
+{
+  "name": "e2former-figures",
+  "private": true,
+  "description": "Generates assets/fig2.svg and assets/fig2.png",
+  "scripts": { "build": "node fig2.js" },
+  "dependencies": { "mathjax-full": "3.2.2", "playwright": "1.56.1" }
+}

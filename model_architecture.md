@@ -2,7 +2,9 @@
 
 E2Former is an E(3)-equivariant transformer for molecular energy/force modeling with an efficiency-first design centered on Wigner-6j-based tensor product factorization.
 
-![E2Former architecture](assets/fig2.png)
+![E2Former method schematic](assets/fig2.png)
+
+*Panel (a): the edge-level SO(3) convolution is expanded binomially in tensor space and regrouped with Wigner-6j recoupling so that every neighbour sum depends on the neighbour only, moving the tensor-product count from O(|E|) to O(|V|). Panel (b): the Wigner-6j symbol re-associates the double tensor product. Colour marks what each factor depends on (centre atom i, neighbour j, or edge (i, j)). The figure is generated from `assets/src/fig2.js`; see [Regenerating the figure](#regenerating-the-figure).*
 
 ## Design goals
 
@@ -65,6 +67,18 @@ E2Former uses Wigner-6j recoupling to reorganize contraction order and reuse int
 - Keep `pbc_max_radius` consistent with `max_radius` for consistent PBC/non-PBC behavior.
 - Start tuning with graph density knobs (`max_neighbors`, `max_radius`) and batch size first.
 - If memory is tight, reduce neighbor density before reducing representation order.
+
+## Regenerating the figure
+
+`assets/fig2.svg` and `assets/fig2.png` are built, not drawn: equations are typeset from TeX by MathJax and every position is computed from a few layout constants in the script, so the figure can be re-flowed or recoloured by editing `assets/src/fig2.js` and rebuilding.
+
+```bash
+cd assets/src
+npm install          # mathjax-full + playwright (Chromium is used to rasterise the PNG)
+node fig2.js         # writes ../fig2.svg and ../fig2.png (3x)
+```
+
+If Playwright's Chromium is not installed yet, run `npx playwright install chromium` once.
 
 ## Related files
 

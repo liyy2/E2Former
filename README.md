@@ -14,6 +14,7 @@ The repository includes:
 | Path | Purpose |
 |---|---|
 | `src/` | Core E2Former model components (layers, equivariant blocks, wrappers). |
+| `assets/src/` | Generator for the method figure (`fig2.js` → `assets/fig2.svg`, `assets/fig2.png`). |
 | `configs/` | Experiment, dataset, and optimization YAML files. |
 | `main.py` | FairChem-style training entrypoint. |
 | `start_exp.py` | Background launcher for tmux-based jobs. |
@@ -22,10 +23,10 @@ The repository includes:
 ## Method overview
 
 <p align="center">
-  <img src="assets/fig2.png" width="900" alt="E2Former architecture with Wigner-6j convolution and equivariant transformer blocks for molecular modeling." />
+  <img src="assets/fig2.png" width="900" alt="E2Former method schematic: the edge-level SO(3) convolution is expanded binomially and recoupled with Wigner-6j symbols into node-level tensor products." />
 </p>
 <p align="center">
-  <em>Figure. E2Former architecture for scalable E(3)-equivariant molecular modeling.</em>
+  <em>Figure. (a) Expanding the solid harmonic of the edge vector r<sub>ij</sub> = r<sub>i</sub> − r<sub>j</sub> and recoupling with Wigner-6j symbols turns every neighbour sum into a node-level aggregate, moving the tensor-product count from O(|E|) to O(|V|). (b) The Wigner-6j symbol re-associates the double tensor product so the neighbour-only pair is contracted first. Colour marks what each factor depends on: centre atom i, neighbour j, or the edge (i, j). Regenerate with <code>assets/src/fig2.js</code>.</em>
 </p>
 
 ## Contents
